@@ -1,7 +1,3 @@
-<p align="center">
-  <img src="assets/logo.svg" alt="T2 TOTP Authenticator" width="560">
-</p>
-
 <h1 align="center">T2 TOTP Authenticator</h1>
 
 <p align="center">
