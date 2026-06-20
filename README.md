@@ -1,10 +1,9 @@
-<<<<<<< HEAD
 <p align="center">
   <img src="assets/logo.svg" alt="T2 TOTP Authenticator" width="560">
 </p>
 
 =======
->>>>>>> a57a7c4a16513b2de49dfd80cf6060a09eae189a
+
 <h1 align="center">T2 TOTP Authenticator</h1>
 
 <p align="center">
