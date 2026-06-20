@@ -1,0 +1,62 @@
+<svg viewBox="0 0 687 470" xmlns="http://www.w3.org/2000/svg" font-family="'Segoe UI', Inter, Arial, sans-serif">
+  <rect width="687" height="470" rx="8" fill="#F6F7F9"/>
+
+  <!-- Win11-style title bar -->
+  <rect x="0" y="0" width="687" height="32" fill="#F3F3F3"/>
+  <rect x="3" y="6" width="20" height="20" rx="5" fill="#F20043"/>
+  <text x="13" y="20" font-size="9" font-weight="700" fill="#FFFFFF" text-anchor="middle">T2</text>
+  <text x="30" y="21" font-size="12" fill="#1B2A4A">T2 TOTP Authenticator</text>
+  <text x="612" y="21" font-size="14" fill="#5A6678">—</text>
+  <text x="640" y="21" font-size="12" fill="#5A6678">▢</text>
+  <text x="668" y="21" font-size="13" fill="#5A6678">✕</text>
+
+  <!-- App header -->
+  <g>
+    <rect x="14" y="44" width="28" height="28" rx="7" fill="#F20043"/>
+    <text x="28" y="63" font-size="13" font-weight="700" fill="#FFFFFF" text-anchor="middle">T2</text>
+    <circle cx="40" cy="48" r="2.2" fill="#F0A830"/>
+    <text x="50" y="63" font-size="15" font-weight="700" fill="#1B2A4A">T2 TOTP</text>
+
+    <!-- right cluster: small icon buttons + Add + transport -->
+    <rect x="430" y="44" width="56" height="28" rx="7" fill="#F20043"/>
+    <text x="458" y="62" font-size="12.5" font-weight="600" fill="#FFFFFF" text-anchor="middle">+ Add</text>
+    <rect x="492" y="44" width="30" height="28" rx="7" fill="#FFFFFF" stroke="#E2E5EC"/>
+    <text x="507" y="63" font-size="14" fill="#1B2A4A" text-anchor="middle">↻</text>
+    <rect x="528" y="44" width="30" height="28" rx="7" fill="#FFFFFF" stroke="#E2E5EC"/>
+    <text x="543" y="63" font-size="14" fill="#1B2A4A" text-anchor="middle">⚙</text>
+    <rect x="564" y="44" width="30" height="28" rx="7" fill="#F20043"/>
+    <text x="579" y="63" font-size="14" fill="#FFFFFF" text-anchor="middle">⌨</text>
+    <rect x="600" y="44" width="73" height="28" rx="7" fill="#FFFFFF" stroke="#E2E5EC"/>
+    <text x="610" y="62" font-size="12" fill="#1B2A4A">USB-HID</text>
+    <text x="660" y="62" font-size="9" fill="#8A93A6">▾</text>
+  </g>
+
+  <!-- Card list -->
+  <rect x="14" y="84" width="659" height="120" rx="10" fill="#FFFFFF" stroke="#E2E5EC"/>
+  <text x="30" y="112" font-size="14" font-weight="700" fill="#1B2A4A">Test[A]:Test</text>
+  <rect x="120" y="101" width="64" height="15" rx="7" fill="#FDF0DC"/>
+  <text x="152" y="112" font-size="10.5" font-weight="700" fill="#B5781A" text-anchor="middle">Auto-OTP</text>
+  <text x="30" y="129" font-size="11" fill="#8A93A6">TOTP/SHA1</text>
+  <text x="452" y="118" font-size="11" fill="#8A93A6" text-anchor="end">15s</text>
+  <circle cx="470" cy="114" r="7.5" fill="none" stroke="#E2E5EC" stroke-width="2.5"/>
+  <path d="M470 106.5 A7.5 7.5 0 1 1 463.5 118" fill="none" stroke="#F20043" stroke-width="2.5" stroke-linecap="round"/>
+  <text x="520" y="119" font-size="17" font-family="monospace" fill="#1B2A4A">326 700</text>
+  <rect x="568" y="102" width="44" height="26" rx="7" fill="#FFFFFF" stroke="#E2E5EC"/>
+  <text x="590" y="119" font-size="12" fill="#1B2A4A" text-anchor="middle">Copy</text>
+  <rect x="618" y="102" width="50" height="26" rx="7" fill="#FFFFFF" stroke="#E2E5EC"/>
+  <text x="643" y="119" font-size="12" fill="#1B2A4A" text-anchor="middle">Delete</text>
+  <line x1="30" y1="146" x2="657" y2="146" stroke="#EEF0F4"/>
+  <text x="30" y="174" font-size="14" font-weight="700" fill="#1B2A4A">Test2:Test2</text>
+  <rect x="118" y="163" width="44" height="15" rx="7" fill="#EEF0F4"/>
+  <text x="140" y="174" font-size="10.5" font-weight="700" fill="#8A93A6" text-anchor="middle">touch</text>
+  <text x="30" y="191" font-size="11" fill="#8A93A6">TOTP/SHA1</text>
+  <rect x="560" y="166" width="48" height="26" rx="7" fill="#FFFFFF" stroke="#E2E5EC"/>
+  <text x="584" y="183" font-size="12" fill="#1B2A4A" text-anchor="middle">Read</text>
+  <rect x="618" y="166" width="50" height="26" rx="7" fill="#FFFFFF" stroke="#E2E5EC"/>
+  <text x="643" y="183" font-size="12" fill="#1B2A4A" text-anchor="middle">Delete</text>
+
+  <!-- Bottom status bar: left truncates, right message reserved -->
+  <rect x="0" y="438" width="687" height="32" fill="#FFFFFF" stroke="#E2E5EC"/>
+  <text x="16" y="458" font-size="11.5" fill="#8A93A6">via USB-HID  ·  S/N 04a1b2c3  ·  Auto-OTP Ctrl + Alt + T</text>
+  <text x="671" y="458" font-size="11.5" fill="#1E8E3E" text-anchor="end">✓  Copied — clears in 45s</text>
+</svg>

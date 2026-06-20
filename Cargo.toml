@@ -1,0 +1,100 @@
+[package]
+name = "t2totp"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.75"
+license = "MIT OR Apache-2.0"
+description = "T2 TOTP Authenticator — a small, dedicated TOTP tool for Token2 second-generation FIDO2 keys, over USB-HID and NFC/PC-SC (with serial-based NFC identification)."
+readme = "README.md"
+build = "build.rs"
+keywords = ["token2", "totp", "fido2", "otp", "2fa"]
+categories = ["command-line-utilities", "authentication"]
+
+[lib]
+name = "t2totp"
+path = "src/lib.rs"
+
+[[bin]]
+name = "t2totp"
+path = "src/main.rs"
+
+[[bin]]
+name = "t2totp-gui"
+path = "src/bin/gui.rs"
+required-features = ["gui"]
+
+# This tool spends its time parsing device-supplied bytes; a length-arithmetic
+# bug should panic loudly in release, not wrap into a miscalculation. The cost is
+# negligible for an I/O-bound smart-card tool.
+[profile.release]
+overflow-checks = true
+
+[dependencies]
+# Smart-card (CCID / NFC) transport.
+pcsc = "2"
+
+# Scoped crypto for the device's ECDH+AES seed-sealing handshake (P-256 ECDH ->
+# SHA-256 -> AES-256-CBC). Hand-rolling these is not worth the risk.
+aes = { version = "0.8", default-features = false }
+cbc = { version = "0.1", default-features = false, features = ["alloc", "block-padding"] }
+p256 = { version = "0.13", default-features = false, features = ["ecdh", "arithmetic"] }
+sha2 = { version = "0.10", default-features = false }
+rand_core = { version = "0.6", features = ["getrandom"] }
+
+# Scrub seeds/PINs from memory.
+zeroize = { version = "1", default-features = false, features = ["alloc"] }
+
+# --- GUI (optional; `--features gui`) ---------------------------------------
+# Native egui desktop app. `eframe` brings the windowing/backend; `arboard` is
+# used directly so the OTP code auto-clear can confirm the clipboard still holds
+# *our* code before wiping it.
+eframe = { version = "0.27", optional = true, default-features = false, features = [
+    "default_fonts",
+    "glow",
+    "wayland",
+    "x11",
+] }
+egui = { version = "0.27", optional = true, default-features = false, features = ["default_fonts"] }
+arboard = { version = "3", optional = true, default-features = false }
+# PNG decode for the optional window/tray icon (assets/icon.png). Already in the
+# eframe tree; declared directly so the GUI code can call it. Only PNG is needed.
+image = { version = "0.25", optional = true, default-features = false, features = ["png"] }
+
+# --- Global Auto-OTP hotkey (optional; `--features hotkey`) ------------------
+# A system-wide hotkey reads the [A]-tagged profile's live code and types it
+# into the focused window — the desktop counterpart to Token2's Auto-OTP.
+# Platform-specific and heavier; kept opt-in.
+global-hotkey = { version = "0.6", optional = true }
+enigo = { version = "0.2", optional = true, default-features = false, features = ["x11rb"] }
+
+# QR scanning (optional; `--features qr`). Pinned for the Rust 1.75 toolchain:
+# newer releases of these (and their transitive deps) require edition2024 / a
+# newer rustc. `screenshots` captures the displays; `rqrr` decodes the QR.
+rqrr = { version = "=0.7.1", optional = true }
+screenshots = { version = "=0.5.4", optional = true }
+
+# USB-HID backend. Linux uses the dependency-free hidraw `File` path by default;
+# macOS/Windows (and an opt-in Linux override) use hidapi.
+[target.'cfg(not(target_os = "linux"))'.dependencies]
+hidapi = { version = "2.6", default-features = false, features = [
+    "macos-shared-device",
+    "windows-native",
+] }
+
+# Windows-only: embed the .ico into the binaries (see build.rs).
+[target.'cfg(target_os = "windows")'.build-dependencies]
+winresource = "0.1"
+
+[features]
+# Build the native egui desktop app (`t2totp-gui`).
+gui = ["dep:eframe", "dep:egui", "dep:arboard", "dep:image"]
+# Global Auto-OTP hotkey support in the GUI (implies gui).
+hotkey = ["gui", "dep:global-hotkey", "dep:enigo"]
+qr = ["gui", "dep:rqrr", "dep:screenshots"]
+# Force the hidapi HID backend on Linux too (default Linux build uses hidraw).
+hidapi-backend = ["dep:hidapi"]
+
+[target.'cfg(target_os = "linux")'.dependencies]
+hidapi = { version = "2.6", optional = true, default-features = false, features = [
+    "linux-static-hidraw",
+] }

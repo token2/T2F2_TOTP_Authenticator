@@ -1,0 +1,10 @@
+# T2 TOTP Authenticator — grant the logged-in user access to a Token2 FIDO key's
+# USB-HID interface so the USB-HID transport works unprivileged.
+# (The NFC/PC-SC transport needs no special rule.)
+# Install: copy to /etc/udev/rules.d/, then `udevadm control --reload-rules && udevadm trigger`, and re-plug the key.
+
+# Token2 (VID 0x349e) FIDO2 keys — match the FIDO HID usage page via hidraw.
+KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{idVendor}=="349e", TAG+="uaccess", GROUP="plugdev", MODE="0660"
+
+# USB device node (covers the parent interface before hidraw is created).
+SUBSYSTEM=="usb", ATTRS{idVendor}=="349e", TAG+="uaccess", GROUP="plugdev", MODE="0660"

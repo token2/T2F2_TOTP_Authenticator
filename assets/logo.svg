@@ -1,0 +1,58 @@
+<svg viewBox="0 0 720 240" xmlns="http://www.w3.org/2000/svg" font-family="'Segoe UI', Inter, Arial, sans-serif">
+  <!-- T2 TOTP Authenticator — brand mark -->
+  <!-- Palette: primary red #F20043, deep red #C10038, gold accent #F0A830, navy #1B2A4A -->
+  <defs>
+    <linearGradient id="red" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#F20043"/>
+      <stop offset="1" stop-color="#C10038"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Rounded red badge with the dotted security-icon motif -->
+  <rect x="16" y="20" width="200" height="200" rx="36" fill="url(#red)"/>
+
+  <!-- Dotted-outline security motif: keys, shields, checks scattered faintly -->
+  <g fill="none" stroke="#ffffff" stroke-opacity="0.22" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="2.4 5.2">
+    <!-- shield top-left -->
+    <path d="M50 52 l16 -6 16 6 v14 c0 11 -8 18 -16 22 c-8 -4 -16 -11 -16 -22 z"/>
+    <!-- key bottom-right -->
+    <circle cx="176" cy="176" r="12"/>
+    <path d="M186 184 l16 16 M196 194 l6 -6 M192 198 l6 -6"/>
+    <!-- check badge bottom-left -->
+    <circle cx="56" cy="186" r="15"/>
+    <path d="M49 186 l5 6 9 -12"/>
+    <!-- lock top-right -->
+    <rect x="160" y="50" width="26" height="20" rx="3"/>
+    <path d="M165 50 v-6 a8 8 0 0 1 16 0 v6"/>
+  </g>
+
+  <!-- T2 monogram hero mark -->
+  <g fill="#ffffff">
+    <!-- "T" -->
+    <rect x="60" y="92" width="64" height="14" rx="3"/>
+    <rect x="85" y="92" width="14" height="62" rx="3"/>
+    <!-- "2" -->
+    <path d="M126 104
+             a22 22 0 0 1 42 9
+             c0 14 -13 22 -27 33
+             h28 v14 h-50 v-12
+             c18 -14 33 -22 33 -34
+             a8 8 0 0 0 -16 -1 z" />
+  </g>
+  <!-- gold accent dot (the fido 'i'-dot motif) -->
+  <circle cx="170" cy="78" r="7" fill="#F0A830"/>
+
+  <!-- Wordmark -->
+  <g>
+    <text x="248" y="118" font-size="58" font-weight="700" fill="#1B2A4A" letter-spacing="-1">T2 TOTP</text>
+    <text x="250" y="158" font-size="23" font-weight="600" fill="#F20043" letter-spacing="0.5">Authenticator</text>
+    <text x="251" y="188" font-size="15.5" font-weight="500" fill="#5A6678">for Token2 second-generation FIDO2 keys</text>
+    <!-- transport chips -->
+    <g font-size="12.5" font-weight="600">
+      <rect x="251" y="200" width="74" height="22" rx="11" fill="#FCE4EC"/>
+      <text x="288" y="215.5" fill="#C10038" text-anchor="middle">USB-HID</text>
+      <rect x="333" y="200" width="92" height="22" rx="11" fill="#FFF1DC"/>
+      <text x="379" y="215.5" fill="#B5781A" text-anchor="middle">NFC / PC-SC</text>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>T2 TOTP Authenticator</title>
+<!-- Font Awesome (Free) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --red:#F20043; --red-deep:#C10038; --gold:#F0A830; --navy:#1B2A4A;
+    --ink:#1d2330; --muted:#5b6675; --line:#e7e9ef; --bg:#ffffff; --soft:#f7f8fb;
+    --ok:#1E8E3E; --warn:#B26A00; --danger:#C10038;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.6;}
+  code,pre,.mono{font-family:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace}
+  a{color:var(--red);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:1100px;margin:0 auto;padding:0 24px}
+  .grid{display:grid;grid-template-columns:240px 1fr;gap:40px;align-items:start}
+  @media (max-width:880px){.grid{grid-template-columns:1fr}.toc{position:static!important;display:none}}
+  header.hero{background:linear-gradient(135deg,var(--navy),#0f1830);color:#fff;padding:56px 0 48px;text-align:center;}
+  .badge-mark{width:64px;height:64px;border-radius:16px;background:var(--red);display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:30px;color:#fff;position:relative;box-shadow:0 8px 24px rgba(0,0,0,.35);}
+  .badge-mark::after{content:"";position:absolute;top:8px;right:8px;width:9px;height:9px;border-radius:50%;background:var(--gold)}
+  header.hero h1{margin:18px 0 6px;font-size:34px;letter-spacing:-.02em}
+  header.hero p.tag{margin:0 auto;max-width:620px;color:#c9d2e3;font-size:17px}
+  .pills{margin-top:22px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  .pill{font-size:12.5px;font-weight:600;padding:6px 12px;border-radius:999px;background:rgba(255,255,255,.08);color:#dfe6f2;border:1px solid rgba(255,255,255,.12);display:inline-flex;align-items:center;gap:7px;}
+  .pill i{color:var(--gold)}
+  .cta{margin-top:26px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+  .btn{display:inline-flex;align-items:center;gap:9px;font-weight:600;font-size:15px;padding:12px 20px;border-radius:10px;border:1px solid transparent;cursor:pointer;}
+  .btn-primary{background:var(--red);color:#fff}
+  .btn-primary:hover{background:var(--red-deep);text-decoration:none}
+  .btn-ghost{background:transparent;color:#fff;border-color:rgba(255,255,255,.25)}
+  .btn-ghost:hover{background:rgba(255,255,255,.08);text-decoration:none}
+  main{padding:44px 0 80px}
+  .toc{position:sticky;top:24px}
+  .toc h4{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 10px}
+  .toc a{display:flex;align-items:center;gap:10px;color:var(--ink);padding:7px 10px;border-radius:8px;font-size:14px}
+  .toc a:hover{background:var(--soft);text-decoration:none}
+  .toc a i{width:16px;text-align:center;color:var(--red)}
+  section{scroll-margin-top:20px;margin-bottom:14px}
+  section h2{font-size:22px;letter-spacing:-.01em;margin:34px 0 14px;display:flex;align-items:center;gap:12px;padding-bottom:8px;border-bottom:1px solid var(--line);}
+  section h2 i{color:var(--red);font-size:19px}
+  section h3{font-size:16.5px;margin:22px 0 8px;display:flex;align-items:center;gap:9px}
+  section h3 i{color:var(--gold)}
+  p{margin:10px 0}
+  ul,ol{margin:10px 0;padding-left:22px}
+  li{margin:5px 0}
+  strong{font-weight:600}
+  .lead{font-size:17px;color:#2a3140}
+  .note{display:flex;gap:12px;padding:14px 16px;border-radius:10px;margin:16px 0;border:1px solid;font-size:14.5px}
+  .note i{margin-top:2px;font-size:16px;flex:none}
+  .note.info{background:#eef4ff;border-color:#cfe0ff;color:#243b66}
+  .note.info i{color:#2c6fdf}
+  .note.warn{background:#fff6e8;border-color:#ffe2b0;color:#6b4a09}
+  .note.warn i{color:var(--warn)}
+  .note.danger{background:#fdecf1;border-color:#f7c2d3;color:#7a1330}
+  .note.danger i{color:var(--danger)}
+  .note.ok{background:#eaf7ee;border-color:#bfe6c9;color:#14622e}
+  .note.ok i{color:var(--ok)}
+  pre{background:#0f1830;color:#e7ecf6;padding:16px 18px;border-radius:10px;overflow:auto;font-size:13.5px;line-height:1.55}
+  pre .c{color:#8aa0c6}
+  pre .k{color:#ffc08a}
+  pre .s{color:#9fe0b0}
+  p code,li code,td code{background:var(--soft);border:1px solid var(--line);border-radius:5px;padding:1px 6px;font-size:12.8px}
+  .steps{margin:14px 0}
+  .step{display:flex;gap:14px;padding:14px 0;border-bottom:1px dashed var(--line)}
+  .step:last-child{border-bottom:0}
+  .step .n{counter-increment:step;flex:none;width:30px;height:30px;border-radius:50%;background:var(--red);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:14px}
+  .step .n::before{content:counter(step)}
+  .steps{counter-reset:step}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin:16px 0}
+  .card{border:1px solid var(--line);border-radius:12px;padding:16px}
+  .card i{font-size:20px;color:var(--red)}
+  .card h4{margin:10px 0 4px;font-size:15px}
+  .card p{margin:0;font-size:13.5px;color:var(--muted)}
+  .keys{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+  .kbd{font-family:"JetBrains Mono",monospace;font-size:13px;font-weight:600;padding:5px 11px;border-radius:7px;background:#fff;border:1px solid var(--line);box-shadow:0 1px 0 var(--line)}
+  .kbd.fixed{background:var(--navy);color:#fff;border-color:var(--navy)}
+  table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px}
+  th,td{border:1px solid var(--line);padding:9px 12px;text-align:left}
+  th{background:var(--soft);font-weight:600}
+  footer{border-top:1px solid var(--line);padding:26px 0;color:var(--muted);font-size:13.5px;text-align:center}
+  .screenshot{border:1px dashed var(--line);border-radius:10px;padding:34px;text-align:center;color:var(--muted);background:var(--soft);margin:14px 0;font-size:14px}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="badge-mark">2</div>
+    <h1>T2&nbsp;TOTP&nbsp;Authenticator</h1>
+    <p class="tag">A small, dedicated TOTP app for Token2 <strong>PIN+ series</strong> FIDO2 keys — with the one-keystroke <strong>Auto-OTP</strong> hotkey.</p>
+    <div class="pills">
+      <span class="pill"><i class="fa-brands fa-osi"></i> Open source</span>
+      <span class="pill"><i class="fa-brands fa-rust"></i> Built with Rust</span>
+      <span class="pill"><i class="fa-solid fa-scale-balanced"></i> MIT / Apache-2.0</span>
+      <span class="pill"><i class="fa-brands fa-windows"></i> Windows</span>
+    </div>
+    <div class="cta">
+      <a class="btn btn-primary" href="#download"><i class="fa-solid fa-download"></i> Download</a>
+      <a class="btn btn-ghost" href="#cli"><i class="fa-solid fa-terminal"></i> CLI docs</a>
+      <a class="btn btn-ghost" href="https://github.com/"><i class="fa-brands fa-github"></i> Source</a>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+<div class="grid">
+
+  <nav class="toc">
+    <h4>Contents</h4>
+    <a href="#about"><i class="fa-solid fa-circle-info"></i> What this is</a>
+    <a href="#autootp"><i class="fa-solid fa-bolt"></i> Auto-OTP</a>
+    <a href="#interface"><i class="fa-solid fa-window-maximize"></i> Interface</a>
+    <a href="#download"><i class="fa-solid fa-download"></i> Download &amp; run</a>
+    <a href="#settings"><i class="fa-solid fa-gear"></i> Settings</a>
+    <a href="#add"><i class="fa-solid fa-plus"></i> Add a profile</a>
+    <a href="#faq"><i class="fa-solid fa-circle-question"></i> FAQ</a>
+    <a href="#platforms"><i class="fa-solid fa-layer-group"></i> Other platforms</a>
+    <a href="#cli"><i class="fa-solid fa-terminal"></i> Command line</a>
+    <a href="#license"><i class="fa-solid fa-scale-balanced"></i> Licensing</a>
+  </nav>
+
+  <div>
+    <div class="note info">
+      <i class="fa-solid fa-circle-info"></i>
+      <div><strong>Supported keys: the Token2 PIN+ series only.</strong> Works with Token2 <strong>PIN+ series</strong> FIDO2 keys (<code>T2F2-PIN+</code>, in their various form factors — Dual, Type-C, Mini, NFC-Slim, and so on, across Release&nbsp;2&nbsp;/&nbsp;3&nbsp;/&nbsp;3.x), which can securely store TOTP secrets on the key. Older or non-PIN+ keys, and first-generation keys (plain <code>T2F2</code>, <code>T2F2-TypeC</code>) which only have HOTP, are <strong>not</strong> supported for TOTP.</div>
+    </div>
+
+    <section id="about">
+      <h2><i class="fa-solid fa-circle-info"></i> What this is</h2>
+      <p class="lead">Token2's PIN+ series keys can emulate the <strong>TOTP</strong> protocol. Doing a TOTP login the long way — find the profile, copy the code, switch to the login page, paste, submit — is <strong>seven steps</strong> for something you may do many times a day.</p>
+      <p><strong>T2 TOTP Authenticator</strong> collapses that into <strong>one keystroke</strong>. Its headline feature is <strong>Auto-OTP</strong>: press a global hotkey and the current one-time code for your tagged profile is typed straight into whatever field has focus (optionally followed by Enter). If the key is plugged in and the app is running, logging in is a single hotkey press.</p>
+      <div class="cards">
+        <div class="card"><i class="fa-solid fa-bolt"></i><h4>One-keystroke login</h4><p>The Auto-OTP hotkey types the code into the focused field.</p></div>
+        <div class="card"><i class="fa-solid fa-key"></i><h4>Stored on the key</h4><p>Secrets live on the hardware token, never on the PC.</p></div>
+        <div class="card"><i class="fa-solid fa-feather"></i><h4>Small &amp; focused</h4><p>A dedicated TOTP app — nothing else to get in the way.</p></div>
+        <div class="card"><i class="fa-brands fa-rust"></i><h4>Open source</h4><p>Rewritten from scratch in Rust; MIT / Apache-2.0.</p></div>
+      </div>
+      <div class="note info">
+        <i class="fa-solid fa-code-branch"></i>
+        <div>An open-source, independent reimplementation of the original Token2 <em>T2F2 TOTP Authenticator</em>, rewritten from scratch in <strong>Rust</strong>. This is a <strong>dedicated TOTP app</strong>; for the full feature set use Token2's complete <strong>Companion app</strong>.</div>
+      </div>
+    </section>
+
+    <section id="autootp">
+      <h2><i class="fa-solid fa-bolt"></i> Auto-OTP — the idea</h2>
+      <p>Instead of the seven-step copy-and-paste dance, press a hotkey and the code is sent to the focused input.</p>
+      <div class="keys">
+        <span class="kbd fixed">Ctrl</span><span class="kbd fixed">Alt</span><span class="kbd">A</span><span class="kbd">B</span><span class="kbd">C</span><span class="kbd">F</span><span class="kbd">N</span><span class="kbd">Q</span><span class="kbd">S</span><span class="kbd">V</span><span class="kbd">X</span><span class="kbd">Z</span>
+      </div>
+      <div class="note warn">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <div>For technical reasons the shortcut is limited to <strong>left Ctrl + Alt + a letter</strong> from a fixed set chosen not to clash with common shortcuts: <strong>A, B, C, F, N, Q, S, V, X, Z</strong>.</div>
+      </div>
+      <p>A key can hold up to <strong>50 TOTP profiles</strong>, but <strong>only one</strong> can be used with Auto-OTP. That profile is marked with a special <code>[A]</code> tag appended to its issuer. So a TOTP login becomes three steps — or just <strong>one</strong> when the key is already plugged in and the app is running.</p>
+    </section>
+
+    <section id="interface">
+      <h2><i class="fa-solid fa-window-maximize"></i> The interface</h2>
+      <p>The window lists your TOTP profiles with their live codes and a countdown ring. The Auto-OTP profile is flagged with an <strong>Auto-OTP</strong> badge (the <code>[A]</code> tag). From the header you can pick the transport, add a profile, refresh, open Settings, and Exit.</p>
+      <div class="screenshot"><i class="fa-regular fa-image"></i> &nbsp;Screenshot to be added</div>
+    </section>
+
+    <section id="download">
+      <h2><i class="fa-solid fa-download"></i> Download &amp; run</h2>
+      <div class="note info">
+        <i class="fa-brands fa-windows"></i>
+        <div><strong>Releasing for Windows.</strong> The original project was Windows-only, and this is a Windows-first release. Because it's written in Rust, macOS and Linux builds are <em>possible</em> too — but they are <strong>untested</strong>, mainly because of OS-specific behaviour around the global hotkey and synthetic keystrokes. See <a href="#platforms">Other platforms</a>.</div>
+      </div>
+      <p>T2 TOTP Authenticator is a self-contained executable — no installer, no runtime to deploy. Download it, put it somewhere convenient, and run.</p>
+      <ul>
+        <li><i class="fa-solid fa-user-shield" style="color:var(--gold)"></i> <strong>Admin rights:</strong> not required in normal use. If the key has <strong>HID USB mode disabled</strong>, TOTP data is reachable only over the FIDO channel, which on Windows needs administrator rights — run the app as administrator in that case.</li>
+      </ul>
+    </section>
+
+    <section id="settings">
+      <h2><i class="fa-solid fa-gear"></i> Settings &amp; configuration</h2>
+      <p>Open <strong>Settings</strong> (the <i class="fa-solid fa-gear"></i> button) to configure Auto-OTP:</p>
+      <ul>
+        <li><strong>Shortcut</strong> — fixed to <strong>Ctrl + Alt +</strong> one of the allowed letters.</li>
+        <li><strong>Press Enter after typing the code</strong> — sends an Enter keystroke after the code so the login submits automatically.</li>
+      </ul>
+      <p>Settings are saved to a small text file so they persist between runs and can be pre-deployed alongside the executable. On Windows:</p>
+      <pre><span class="c">%APPDATA%\t2totp\settings.conf</span>
+<span class="c"># e.g. C:\Users\&lt;you&gt;\AppData\Roaming\t2totp\settings.conf</span></pre>
+      <p>It's a simple <code>key = value</code> file:</p>
+      <pre><span class="c"># which transport to use: auto | hid | nfc</span>
+<span class="k">transport</span> = auto
+
+<span class="c"># Auto-OTP hotkey</span>
+<span class="k">hotkey_enabled</span> = true
+<span class="k">hotkey_key</span> = KeyZ            <span class="c"># KeyA,KeyB,KeyC,KeyF,KeyN,KeyQ,KeyS,KeyV,KeyX,KeyZ</span>
+<span class="k">hotkey_append_enter</span> = true   <span class="c"># send Enter after the code</span></pre>
+    </section>
+
+    <section id="add">
+      <h2><i class="fa-solid fa-plus"></i> Adding a TOTP profile</h2>
+      <p>You provision a profile from the account's <strong>TOTP secret</strong>. Below is the <strong>Office 365 / Microsoft Entra (Azure) MFA</strong> flow as an example.</p>
+      <div class="note danger">
+        <i class="fa-solid fa-shield-halved"></i>
+        <div>These are full-featured FIDO2 keys — for Microsoft accounts you can use the more secure <strong>passwordless</strong> method instead of TOTP MFA, which we recommend whenever it's an option. TOTP MFA remains useful where passwordless isn't available.</div>
+      </div>
+
+      <h3><i class="fa-solid fa-1"></i> Get the TOTP secret</h3>
+      <div class="steps">
+        <div class="step"><span class="n"></span><div>Sign in and open <a href="https://mysignins.microsoft.com/security-info" target="_blank" rel="noopener">your security info</a>.</div></div>
+        <div class="step"><span class="n"></span><div>Choose <strong>Add method → Authenticator app</strong>.</div></div>
+        <div class="step"><span class="n"></span><div>When prompted for Microsoft Authenticator, click <strong>I want to use a different authenticator app</strong> (it uses a protocol hardware tokens can't accept).</div></div>
+        <div class="step"><span class="n"></span><div>Click <strong>Next</strong> until the QR appears, then <strong>Can't scan image?</strong> to reveal the <strong>secret key</strong>. Keep the page open.</div></div>
+      </div>
+
+      <h3><i class="fa-solid fa-2"></i> Add the secret to your key</h3>
+      <div class="steps">
+        <div class="step"><span class="n"></span><div>In the app, click <strong><i class="fa-solid fa-plus"></i> Add</strong> to open the form.</div></div>
+        <div class="step"><span class="n"></span><div>Fill in <strong>Issuer</strong> (e.g. <code>O365</code>), <strong>Account</strong> (your username), and paste the <strong>Base32 secret</strong>. Adjust SHA-256 / digits / period / touch only if the provider needs non-defaults (Microsoft uses the defaults).</div></div>
+        <div class="step"><span class="n"></span><div>Click <strong>Add</strong> — the profile appears with its live code.</div></div>
+      </div>
+      <div class="note warn">
+        <i class="fa-solid fa-tag"></i>
+        <div>To use this profile with Auto-OTP, tick <strong>Auto-OTP [A]</strong> (or append the <code>[A]</code> tag to the issuer). This marks the single Auto-OTP profile.</div>
+      </div>
+      <div class="note ok">
+        <i class="fa-solid fa-qrcode"></i>
+        <div><strong>Scan QR from the screen.</strong> If built with the optional <code>qr</code> feature, the Add form has a <strong>Scan QR from screen</strong> button: display the provider's QR code, click it, and issuer, account, secret, algorithm, digits, and period are filled automatically. Capture and decoding are entirely local — nothing is uploaded. No TOTP QR on screen, or no secret in it → a clear message and nothing changes.</div>
+      </div>
+
+      <h3><i class="fa-solid fa-3"></i> Verify</h3>
+      <p>Back on the Microsoft page, click <strong>Next</strong> and enter the current code. Good first try of Auto-OTP: if you tagged the profile <code>[A]</code>, focus the code field and press your hotkey instead of typing the six digits.</p>
+    </section>
+
+    <section id="faq">
+      <h2><i class="fa-solid fa-circle-question"></i> FAQ</h2>
+      <h3><i class="fa-solid fa-tag"></i> Can I turn Auto-OTP on for an existing profile?</h3>
+      <p>No — it can only be set when the profile is created; for security the device doesn't allow changing a TOTP slot afterwards. Re-add the profile with the <code>[A]</code> tag if you need it.</p>
+      <h3><i class="fa-solid fa-clone"></i> Can I have more than one Auto-OTP profile?</h3>
+      <p>The <code>[A]</code> tag is just text, so technically yes — but only <strong>one</strong> is used; if several are tagged, the list is sorted and the last one wins. Keep it to a single <code>[A]</code> profile.</p>
+      <h3><i class="fa-solid fa-user-shield"></i> Why might the app need administrator rights?</h3>
+      <p>Only if the key has <strong>HID USB mode disabled</strong> — then TOTP data is reachable only over the FIDO channel, which needs admin rights on Windows. With HID enabled (the default), no elevation is needed.</p>
+      <h3><i class="fa-solid fa-database"></i> Where are my profiles stored?</h3>
+      <p>On the key itself — never on the PC. The app only reads codes and writes new profiles to the device.</p>
+      <h3><i class="fa-solid fa-keyboard"></i> Is the Auto-OTP Enter reliable on rapid presses?</h3>
+      <p>Yes. On each press the app releases any held modifiers, types the digits, then sends a clean Enter — so every press submits correctly.</p>
+    </section>
+
+    <section id="platforms">
+      <h2><i class="fa-solid fa-layer-group"></i> Other platforms</h2>
+      <p>The app is written in Rust and <strong>released for Windows</strong>, matching the original project. macOS and Linux are <em>buildable</em> from the same source but are <strong>untested</strong>. The parts most likely to need platform-specific work are the <strong>global hotkey</strong> and <strong>synthetic keystrokes</strong>.</p>
+      <table>
+        <tr><th>Platform</th><th>Status</th></tr>
+        <tr><td><i class="fa-brands fa-windows"></i> Windows</td><td>Fully supported.</td></tr>
+        <tr><td><i class="fa-brands fa-apple"></i> macOS</td><td>Should work, untested; prompts for Accessibility permission the first time it types.</td></tr>
+        <tr><td><i class="fa-brands fa-linux"></i> Linux (X11)</td><td>Should work, untested.</td></tr>
+        <tr><td><i class="fa-brands fa-linux"></i> Linux (Wayland)</td><td>Compositor restricts global hotkeys / synthetic input; may need a portal or be disallowed.</td></tr>
+      </table>
+    </section>
+
+    <section id="cli">
+      <h2><i class="fa-solid fa-terminal"></i> Command-line tool (<code>t2totp</code>)</h2>
+      <p>The project also ships a small command-line tool, <code>t2totp</code>, for scripting and headless use — listing codes, adding/removing profiles, and inspecting the key. It uses the same transports (auto-detected, PC/SC first).</p>
+      <pre><span class="c">USAGE:</span>
+    t2totp [GLOBAL OPTS] &lt;COMMAND&gt; [ARGS]
+
+<span class="c">GLOBAL OPTS:</span>
+    <span class="k">--transport</span> &lt;auto|hid|nfc&gt;   Interface to use (default: auto)
+    <span class="k">--reader</span> &lt;name&gt;              Pin a specific PC/SC reader (serial-confirmed)
+    <span class="k">--debug</span>                      Trace device I/O on stderr
+
+<span class="c">COMMANDS:</span>
+    info                         Show the connected key (serial, transport, TOTP support)
+    readers                      List PC/SC readers and flag Token2 FIDO keys (by serial)
+    list                         List stored profiles with live TOTP codes
+    code &lt;issuer&gt; &lt;account&gt;       Print the current code for one profile
+    add  &lt;issuer&gt; &lt;account&gt;       Add a TOTP profile (secret via stdin or $T2TOTP_SECRET)
+                                   <span class="k">--auto</span>            append the [A] Auto-OTP tag
+                                   <span class="k">--sha256</span>          use SHA-256 (default SHA-1)
+                                   <span class="k">--period</span> &lt;sec&gt;    TOTP step (default 30)
+                                   <span class="k">--digits</span> &lt;4..10&gt;  code length (default 6)
+                                   <span class="k">--touch</span>           require a button press to emit the code
+    delete &lt;issuer&gt; &lt;account&gt;     Delete a profile
+    erase --yes                  Erase ALL profiles on the key</pre>
+      <div class="note info">
+        <i class="fa-solid fa-lock"></i>
+        <div>The secret is <strong>never</strong> passed on the command line. <code>add</code> reads the Base32 secret from <strong>stdin</strong> or the <code>T2TOTP_SECRET</code> environment variable, so it never lands in shell history or the process list.</div>
+      </div>
+      <h3><i class="fa-solid fa-code"></i> Examples</h3>
+      <pre><span class="c"># identify the key, list codes</span>
+t2totp info
+t2totp list
+
+<span class="c"># print one code (handy in scripts)</span>
+t2totp code O365 alice@example.com
+
+<span class="c"># add a profile, piping the secret on stdin</span>
+printf '%s' <span class="s">"JBSWY3DPEHPK3PXP"</span> | t2totp add O365 alice@example.com
+
+<span class="c"># add an Auto-OTP-tagged profile, SHA-256, 8 digits</span>
+printf '%s' <span class="s">"JBSWY3DPEHPK3PXP"</span> | t2totp add O365 alice@example.com --auto --sha256 --digits 8
+
+<span class="c"># or pass the secret via the environment</span>
+T2TOTP_SECRET=<span class="s">"JBSWY3DPEHPK3PXP"</span> t2totp add Acme bob
+
+<span class="c"># force NFC, or pin a specific reader</span>
+t2totp --transport nfc list
+t2totp --reader <span class="s">"ACS ACR1252 1S CL Reader"</span> list
+
+<span class="c"># delete one profile, or wipe the key</span>
+t2totp delete O365 alice@example.com
+t2totp erase --yes</pre>
+    </section>
+
+    <section id="license">
+      <h2><i class="fa-solid fa-scale-balanced"></i> Licensing</h2>
+      <p>Open source, dual-licensed under either <strong>MIT</strong> or the <strong>Apache License 2.0</strong>, at your option. See <code>LICENSE-MIT</code> and <code>LICENSE-APACHE</code>.</p>
+    </section>
+  </div>
+</div>
+</main>
+
+<footer>
+  <div class="wrap">
+    T2 TOTP Authenticator is an independent, open-source app. For the complete feature set, see Token2's full Companion app.<br>
+    <span style="opacity:.7">Icons by Font Awesome (Free) · CC BY 4.0 / SIL OFL 1.1</span>
+  </div>
+</footer>
+
+</body>
+</html>
